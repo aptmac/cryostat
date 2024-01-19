@@ -21,7 +21,7 @@ import java.time.temporal.ChronoUnit;
 import java.util.concurrent.CompletableFuture;
 import java.util.concurrent.ExecutionException;
 
-import org.openjdk.jmc.rjmx.services.jfr.IFlightRecorderService;
+import org.openjdk.jmc.flightrecorder.configuration.IFlightRecorderService;
 
 import io.cryostat.core.net.JFRConnection;
 import io.cryostat.core.sys.Clock;

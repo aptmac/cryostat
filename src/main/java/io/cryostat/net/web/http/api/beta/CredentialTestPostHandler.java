@@ -21,7 +21,7 @@ import java.util.Set;
 
 import javax.inject.Inject;
 
-import org.openjdk.jmc.rjmx.ConnectionException;
+import org.openjdk.jmc.rjmx.common.ConnectionException;
 
 import io.cryostat.configuration.CredentialsManager;
 import io.cryostat.core.net.Credentials;

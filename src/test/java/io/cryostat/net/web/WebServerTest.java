@@ -30,7 +30,7 @@ import java.util.Set;
 
 import javax.management.remote.JMXServiceURL;
 
-import org.openjdk.jmc.rjmx.services.jfr.IFlightRecorderService;
+import org.openjdk.jmc.flightrecorder.configuration.IFlightRecorderService;
 
 import io.cryostat.MainModule;
 import io.cryostat.core.log.Logger;

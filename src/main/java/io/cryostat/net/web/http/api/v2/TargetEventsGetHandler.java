@@ -24,7 +24,7 @@ import java.util.stream.Collectors;
 
 import javax.inject.Inject;
 
-import org.openjdk.jmc.rjmx.services.jfr.IEventTypeInfo;
+import org.openjdk.jmc.flightrecorder.configuration.events.IEventTypeInfo;
 
 import io.cryostat.configuration.CredentialsManager;
 import io.cryostat.jmc.serialization.SerializableEventTypeInfo;

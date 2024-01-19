@@ -15,6 +15,12 @@
     <id>github</id>
     <url>https://maven.pkg.github.com/cryostatio/cryostat-core</url>
   </repository>
+  <repository>
+    <id>adoptium</id>
+    <name>Adoptium</name>
+    <url>https://adoptium.jfrog.io/artifactory/jmc-libs-snapshots/</url>
+    <layout>default</layout>
+  </repository>
 </repositories>
 
 <properties>
@@ -85,7 +91,8 @@
   <com.google.dagger.version>2.47</com.google.dagger.version>
   <com.google.dagger.compiler.version>${com.google.dagger.version}</com.google.dagger.compiler.version>
 
-  <io.cryostat.core.version>2.27.0</io.cryostat.core.version>
+  <io.cryostat.core.version>2.28.0-SNAPSHOT</io.cryostat.core.version>
+  <jmc.core.version>9.0.0-SNAPSHOT</jmc.core.version>
 
   <org.openjdk.nashorn.core.version>15.4</org.openjdk.nashorn.core.version>
   <org.apache.commons.lang3.version>3.13.0</org.apache.commons.lang3.version>
@@ -159,6 +166,41 @@
     <groupId>io.cryostat</groupId>
     <artifactId>cryostat-core</artifactId>
     <version>${io.cryostat.core.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.openjdk.jmc</groupId>
+    <artifactId>common</artifactId>
+    <version>${jmc.core.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.openjdk.jmc</groupId>
+    <artifactId>flightrecorder</artifactId>
+    <version>${jmc.core.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.openjdk.jmc</groupId>
+    <artifactId>flightrecorder.configuration</artifactId>
+    <version>${jmc.core.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.openjdk.jmc</groupId>
+    <artifactId>flightrecorder.rules</artifactId>
+    <version>${jmc.core.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.openjdk.jmc</groupId>
+    <artifactId>flightrecorder.rules.jdk</artifactId>
+    <version>${jmc.core.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.openjdk.jmc</groupId>
+    <artifactId>jdp</artifactId>
+    <version>${jmc.core.version}</version>
+  </dependency>
+  <dependency>
+    <groupId>org.openjdk.jmc</groupId>
+    <artifactId>rjmx.common</artifactId>
+    <version>${jmc.core.version}</version>
   </dependency>
   <dependency>
     <groupId>org.openjdk.nashorn</groupId>

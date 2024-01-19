@@ -23,7 +23,7 @@ import java.util.Map;
 import javax.management.MBeanServerConnection;
 import javax.management.ObjectName;
 
-import org.openjdk.jmc.rjmx.IConnectionHandle;
+import org.openjdk.jmc.rjmx.common.IConnectionHandle;
 
 import io.cryostat.MainModule;
 import io.cryostat.configuration.CredentialsManager;

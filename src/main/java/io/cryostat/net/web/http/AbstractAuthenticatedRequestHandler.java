@@ -28,7 +28,7 @@ import javax.naming.ServiceUnavailableException;
 import javax.script.ScriptException;
 import javax.security.sasl.SaslException;
 
-import org.openjdk.jmc.rjmx.ConnectionException;
+import org.openjdk.jmc.rjmx.common.ConnectionException;
 
 import io.cryostat.configuration.CredentialsManager;
 import io.cryostat.core.FlightRecorderException;

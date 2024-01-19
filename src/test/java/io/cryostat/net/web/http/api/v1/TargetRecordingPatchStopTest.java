@@ -15,7 +15,7 @@
  */
 package io.cryostat.net.web.http.api.v1;
 
-import org.openjdk.jmc.rjmx.services.jfr.IFlightRecorderService;
+import org.openjdk.jmc.flightrecorder.configuration.IFlightRecorderService;
 
 import io.cryostat.core.net.JFRConnection;
 import io.cryostat.messaging.notifications.Notification;

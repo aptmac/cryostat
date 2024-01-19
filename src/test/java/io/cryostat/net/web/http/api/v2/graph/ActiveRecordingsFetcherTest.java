@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 import java.util.concurrent.CompletableFuture;
 
-import org.openjdk.jmc.rjmx.services.jfr.IRecordingDescriptor.RecordingState;
+import org.openjdk.jmc.flightrecorder.configuration.IRecordingDescriptor.RecordingState;
 
 import io.cryostat.net.AuthManager;
 import io.cryostat.net.security.ResourceAction;

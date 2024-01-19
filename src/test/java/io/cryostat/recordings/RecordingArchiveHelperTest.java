@@ -33,7 +33,7 @@ import java.util.concurrent.ExecutionException;
 
 import javax.management.remote.JMXServiceURL;
 
-import org.openjdk.jmc.rjmx.services.jfr.IRecordingDescriptor;
+import org.openjdk.jmc.flightrecorder.configuration.IRecordingDescriptor;
 
 import io.cryostat.core.log.Logger;
 import io.cryostat.core.net.CryostatFlightRecorderService;

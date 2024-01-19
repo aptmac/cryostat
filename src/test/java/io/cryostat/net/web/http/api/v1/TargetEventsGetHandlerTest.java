@@ -22,7 +22,7 @@ import java.util.List;
 import java.util.Set;
 
 import org.openjdk.jmc.flightrecorder.configuration.events.IEventTypeID;
-import org.openjdk.jmc.rjmx.services.jfr.IEventTypeInfo;
+import org.openjdk.jmc.flightrecorder.configuration.events.IEventTypeInfo;
 
 import io.cryostat.MainModule;
 import io.cryostat.configuration.CredentialsManager;
