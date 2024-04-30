@@ -16,8 +16,8 @@
 package io.cryostat.recordings;
 
 import org.openjdk.jmc.common.unit.QuantityConversionException;
+import org.openjdk.jmc.flightrecorder.configuration.IFlightRecorderService;
 import org.openjdk.jmc.flightrecorder.configuration.recording.RecordingOptionsBuilder;
-import org.openjdk.jmc.rjmx.services.jfr.IFlightRecorderService;
 
 public interface RecordingOptionsBuilderFactory {
     RecordingOptionsBuilder create(IFlightRecorderService service)

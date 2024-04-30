@@ -33,7 +33,7 @@ import java.util.Set;
 
 import javax.inject.Named;
 
-import org.openjdk.jmc.rjmx.services.jfr.FlightRecorderException;
+import org.openjdk.jmc.flightrecorder.configuration.FlightRecorderException;
 
 import io.cryostat.MainModule;
 import io.cryostat.core.net.JFRConnection;

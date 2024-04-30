@@ -28,7 +28,7 @@ import java.util.concurrent.CompletableFuture;
 
 import javax.script.ScriptException;
 
-import org.openjdk.jmc.rjmx.ConnectionException;
+import org.openjdk.jmc.rjmx.common.ConnectionException;
 
 import io.cryostat.MainModule;
 import io.cryostat.configuration.CredentialsManager;

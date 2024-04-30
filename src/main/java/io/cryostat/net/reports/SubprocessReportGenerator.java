@@ -35,7 +35,7 @@ import javax.inject.Named;
 import javax.inject.Provider;
 
 import org.openjdk.jmc.flightrecorder.rules.IRule;
-import org.openjdk.jmc.rjmx.ConnectionException;
+import org.openjdk.jmc.rjmx.common.ConnectionException;
 
 import io.cryostat.configuration.Variables;
 import io.cryostat.core.CryostatCore;

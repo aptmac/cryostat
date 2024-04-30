@@ -25,8 +25,8 @@ import javax.inject.Inject;
 
 import org.openjdk.jmc.common.unit.IConstrainedMap;
 import org.openjdk.jmc.common.unit.IOptionDescriptor;
+import org.openjdk.jmc.flightrecorder.configuration.IFlightRecorderService;
 import org.openjdk.jmc.flightrecorder.configuration.recording.RecordingOptionsBuilder;
-import org.openjdk.jmc.rjmx.services.jfr.IFlightRecorderService;
 
 import io.cryostat.configuration.CredentialsManager;
 import io.cryostat.net.AuthManager;
