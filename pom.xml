@@ -8,6 +8,12 @@
 
   <repositories>
     <repository>
+      <id>jmc-libs</id>
+      <name>Adoptium JDK Mission Control Core Libraries</name>
+      <url>https://adoptium.jfrog.io/artifactory/jmc-libs</url>
+      <layout>default</layout>
+    </repository>
+    <repository>
       <id>s01.oss.sonatype.org-snapshot</id>
       <url>https://s01.oss.sonatype.org/content/repositories/snapshots/</url>
       <releases>
@@ -33,7 +39,7 @@
     <build.arch>amd64</build.arch>
 
     <io.cryostat.core.version>4.1.0-SNAPSHOT</io.cryostat.core.version>
-    <org.openjdk.jmc.version>9.0.0</org.openjdk.jmc.version>
+    <org.openjdk.jmc.version>9.1.0</org.openjdk.jmc.version>
 
     <org.apache.commons.io.version>2.16.1</org.apache.commons.io.version>
     <org.apache.commons.collections.version>4.4</org.apache.commons.collections.version>
@@ -117,6 +123,11 @@
     <dependency>
       <groupId>org.openjdk.jmc</groupId>
       <artifactId>flightrecorder.configuration</artifactId>
+      <version>${org.openjdk.jmc.version}</version>
+    </dependency>
+    <dependency>
+      <groupId>org.openjdk.jmc</groupId>
+      <artifactId>flightrecorder.serializers</artifactId>
       <version>${org.openjdk.jmc.version}</version>
     </dependency>
     <dependency>
@@ -391,7 +402,7 @@
           </execution>
         </executions>
       </plugin>
-      <plugin>
+      <!-- <plugin>
         <groupId>com.diffplug.spotless</groupId>
         <artifactId>spotless-maven-plugin</artifactId>
         <version>${com.diffplug.spotless.maven.plugin.version}</version>
@@ -419,7 +430,7 @@
             <removeUnusedImports />
           </java>
         </configuration>
-      </plugin>
+      </plugin> -->
       <plugin>
         <groupId>com.github.spotbugs</groupId>
         <artifactId>spotbugs-maven-plugin</artifactId>
