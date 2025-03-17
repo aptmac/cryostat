@@ -16,13 +16,19 @@
 package io.cryostat.analysis;
 
 import java.io.IOException;
+import java.text.MessageFormat;
+import java.util.logging.Level;
+import java.util.logging.Logger;
 
 import org.openjdk.jmc.common.IDisplayable;
 import org.openjdk.jmc.common.item.IItemCollection;
+import org.openjdk.jmc.common.util.StringToolkit;
 import org.openjdk.jmc.flightrecorder.CouldNotLoadRecordingException;
 import org.openjdk.jmc.flightrecorder.JfrLoaderToolkit;
 import org.openjdk.jmc.flightrecorder.jdk.JdkAggregators;
+import org.openjdk.jmc.flightrecorder.serializers.json.FlameGraphJsonSerializer;
 import org.openjdk.jmc.flightrecorder.serializers.json.IItemCollectionJsonSerializer;
+import org.openjdk.jmc.flightrecorder.stacktrace.tree.StacktraceTreeModel;
 
 import com.fasterxml.jackson.databind.ObjectMapper;
 import com.fasterxml.jackson.databind.node.ObjectNode;
@@ -40,6 +46,8 @@ public class AnalysisToolkit {
 
     @Inject RecordingHelper recordingHelper;
 
+    // Returns all the recorded events as a JSON
+    // Note: this gets real big real fast
     @GET
     @Path("/events")
     @RolesAllowed("read")
@@ -47,6 +55,17 @@ public class AnalysisToolkit {
             throws IOException, CouldNotLoadRecordingException {
         IItemCollection items = getItemsFromArchivedInputStream(jvmId, recordingName);
         return IItemCollectionJsonSerializer.toJsonString(items);
+    }
+
+    @GET
+    @Path("/flamegraph")
+    @RolesAllowed("read")
+    public String getFlamegraphJson(@RestPath String jvmId, @RestPath String recordingName)
+            throws IOException, CouldNotLoadRecordingException {
+        IItemCollection items = getItemsFromArchivedInputStream(jvmId, recordingName);
+        StacktraceTreeModel model = new StacktraceTreeModel(items);
+        String data = FlameGraphJsonSerializer.toJson(model);
+        return data;
     }
 
     @GET

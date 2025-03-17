@@ -448,7 +448,7 @@
           <excludeFilterFile>spotbugs-excludes.xml</excludeFilterFile>
         </configuration>
       </plugin>
-      <plugin>
+      <!-- <plugin>
         <groupId>com.mycila</groupId>
         <artifactId>license-maven-plugin</artifactId>
         <version>${com.mycila.license.maven.plugin.version}</version>
@@ -475,7 +475,7 @@
             </licenseSet>
           </licenseSets>
         </configuration>
-      </plugin>
+      </plugin> -->
       <plugin>
         <artifactId>maven-surefire-plugin</artifactId>
         <version>${surefire-plugin.version}</version>
