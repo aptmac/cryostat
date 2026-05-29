@@ -43,14 +43,18 @@ import io.smallrye.common.annotation.Blocking;
 import io.vertx.core.http.HttpServerResponse;
 import io.vertx.core.json.JsonObject;
 import io.vertx.mutiny.core.eventbus.EventBus;
+import jakarta.annotation.security.PermitAll;
 import jakarta.annotation.security.RolesAllowed;
 import jakarta.inject.Inject;
 import jakarta.ws.rs.DELETE;
+import jakarta.ws.rs.ForbiddenException;
 import jakarta.ws.rs.GET;
 import jakarta.ws.rs.NotFoundException;
 import jakarta.ws.rs.POST;
 import jakarta.ws.rs.Path;
+import jakarta.ws.rs.core.Context;
 import jakarta.ws.rs.core.HttpHeaders;
+import jakarta.ws.rs.core.SecurityContext;
 import org.apache.commons.lang3.StringUtils;
 import org.apache.commons.lang3.tuple.Pair;
 import org.eclipse.microprofile.config.inject.ConfigProperty;
@@ -77,6 +81,7 @@ public class ArchivedRecordings {
     @Inject StorageBuckets storageBuckets;
     @Inject S3Presigner presigner;
     @Inject RecordingHelper recordingHelper;
+    @Inject DownloadTokenService tokenService;
     @Inject Logger logger;
 
     @ConfigProperty(name = ConfigProperties.AWS_BUCKET_NAME_ARCHIVES)
@@ -400,26 +405,138 @@ public class ArchivedRecordings {
         return request.id();
     }
 
+    @POST
+    @Blocking
+    @Path("/api/v4/recordings/{encodedKey}/token")
+    @RolesAllowed("read")
+    @Operation(
+            summary = "Generate a download token for an archived recording",
+            description =
+                    """
+                    Generate a one-time download token for an archived recording. This token can be used by external
+                    applications (like JDK Mission Control) to download the recording without requiring browser
+                    cookies or session authentication. The token expires after a configured duration (default 10
+                    minutes) and can only be used once.
+                    """)
+    public TokenResponse generateArchivedRecordingToken(
+            @Parameter(
+                            required = true,
+                            description =
+                                    "The base64-encoded key identifying the archived recording"
+                                            + " (jvmId/filename)")
+                    @RestPath
+                    String encodedKey,
+            @Context SecurityContext securityContext)
+            throws URISyntaxException {
+
+        // Verify the recording exists
+        Pair<String, String> pair = recordingHelper.decodedKey(encodedKey);
+        recordingHelper.assertArchivedRecordingExists(pair.getKey(), pair.getValue());
+
+        String username =
+                securityContext.getUserPrincipal() != null
+                        ? securityContext.getUserPrincipal().getName()
+                        : "unknown";
+
+        logger.debugv(
+                "Generating token for archived recording {0}, username: {1}", encodedKey, username);
+
+        DownloadTokenService.TokenInfo tokenInfo =
+                tokenService.generateTokenForArchivedRecording(encodedKey, username);
+
+        // Build the download URL with the token - use localhost since port is exposed to host
+        // External applications like JMC will connect directly to the backend with the token
+        String backendPort = System.getenv().getOrDefault("QUARKUS_HTTP_PORT", "8181");
+        String downloadUrl =
+                String.format(
+                        "http://localhost:%s/api/v4/download/%s?token=%s",
+                        backendPort, encodedKey, tokenInfo.token());
+
+        logger.infov(
+                "Generated download token for archived recording {0} for user {1}, URL: {2}",
+                encodedKey, username, downloadUrl);
+
+        return new TokenResponse(tokenInfo.token(), downloadUrl, tokenInfo.expiresAt());
+    }
+
     @GET
     @Blocking
     @Path("/api/v4/download/{encodedKey}")
-    @RolesAllowed("read")
+    @PermitAll
     @Operation(
             summary = "Get a download URL for an archived recording",
             description =
                     """
                     Get a download URL for an archived recording. The response will be an HTTP redirect with a Location
                     header pointing to the location where the client can download the recording JFR binary file.
+
+                    Authentication can be provided either via standard session authentication (cookies) or via a
+                    one-time download token passed as a query parameter. Download tokens can be generated via the
+                    /api/v4/recordings/{encodedKey}/token endpoint.
                     """)
     public RestResponse<Object> handleStorageDownload(
-            @RestPath String encodedKey, @RestQuery String filename) throws URISyntaxException {
+            @RestPath String encodedKey,
+            @RestQuery String filename,
+            @Parameter(
+                            required = false,
+                            description =
+                                    "One-time download token for authentication (alternative to"
+                                            + " session cookies)")
+                    @RestQuery
+                    String token,
+            @Context SecurityContext securityContext)
+            throws URISyntaxException {
+
+        // Check authentication: either valid session or valid token
+        if (StringUtils.isNotBlank(token)) {
+            // Token-based authentication
+            logger.infov("Validating token for archived recording {0}", encodedKey);
+            try {
+                tokenService.validateAndConsumeTokenForArchivedRecording(token, encodedKey);
+                logger.infov(
+                        "Token authentication successful for archived recording {0}", encodedKey);
+            } catch (ForbiddenException e) {
+                logger.errorv(
+                        e,
+                        "Token authentication failed (ForbiddenException) for archived recording"
+                                + " {0}: {1}",
+                        encodedKey,
+                        e.getMessage());
+                throw e;
+            } catch (Exception e) {
+                logger.errorv(
+                        e,
+                        "Token authentication failed (unexpected exception) for archived recording"
+                                + " {0}: {1}",
+                        encodedKey,
+                        e.getMessage());
+                throw new ForbiddenException("Token validation failed: " + e.getMessage());
+            }
+        } else {
+            // Session-based authentication - check if user has required role
+            if (securityContext.getUserPrincipal() == null
+                    || !securityContext.isUserInRole("read")) {
+                logger.warnv(
+                        "Unauthorized access attempt to archived recording {0} without valid token"
+                                + " or session",
+                        encodedKey);
+                throw new ForbiddenException(
+                        "Authentication required. Provide a valid session or download token.");
+            }
+        }
+
         Pair<String, String> pair = recordingHelper.decodedKey(encodedKey);
         String key = RecordingHelper.archivedRecordingKey(pair);
 
         recordingHelper.assertArchivedRecordingExists(pair.getKey(), pair.getValue());
 
         String contentName = StringUtils.isNotBlank(filename) ? filename : pair.getValue();
-        if (!presignedDownloadsEnabled) {
+
+        // When using token authentication, always serve the file directly (no presigned redirect)
+        // because the token is single-use and won't work for the redirect
+        boolean useDirectDownload = !presignedDownloadsEnabled || StringUtils.isNotBlank(token);
+
+        if (useDirectDownload) {
             return ResponseBuilder.ok()
                     .header(
                             HttpHeaders.CONTENT_DISPOSITION,
@@ -460,6 +577,15 @@ public class ArchivedRecordings {
                 .location(uri)
                 .build();
     }
+
+    /**
+     * Response containing the generated token and download URL
+     *
+     * @param token the JWT token string
+     * @param downloadUrl the complete download URL with embedded token
+     * @param expiresAt timestamp when the token expires (epoch milliseconds)
+     */
+    public record TokenResponse(String token, String downloadUrl, Long expiresAt) {}
 
     public record ArchivedRecording(
             String jvmId,

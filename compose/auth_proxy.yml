@@ -2,6 +2,8 @@ services:
   cryostat:
     expose:
       - "${CRYOSTAT_HTTP_PORT}"
+    ports:
+      - "${CRYOSTAT_HTTP_PORT}:${CRYOSTAT_HTTP_PORT}"
     environment:
       CRYOSTAT_HTTP_PROXY_HOST: auth
       CRYOSTAT_HTTP_PROXY_PORT: "${CRYOSTAT_HTTP_PORT}"
